@@ -1,0 +1,177 @@
+CREATE DATABASE PF_exercise2;
+USE PF_exercise2;
+
+1. Create a table named Patients with the following columns: PatientID as a private key (representing a unique identifier for each patient) Other relevant columns like Name, Age, Gender, etc. Add a foreign key constraint referencing the Psychologists table (Assume a column PsychologistID exists in the Patients table and references the PsychologistID column in the Psychologists table). 
+
+CREATE TABLE Patients (
+	PatientID INT UNIQUE PRIMARY KEY NOT NULL, 
+	Name VARCHAR(255) NOT NULL, 
+	Age INT, 
+	Gender VARCHAR(2), 
+	PsychologistID INT
+	);
+
+
+DESCRIBE Patients;
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| PatientID      | int          | NO   | PRI | NULL    |       |
+| Name           | varchar(255) | NO   |     | NULL    |       |
+| Age            | int          | YES  |     | NULL    |       |
+| Gender         | varchar(2)   | YES  |     | NULL    |       |
+| PsychologistID | int          | YES  |     | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
+
+CREATE TABLE Psychologists (
+	PsychologistID INT PRIMARY KEY NOT NULL UNIQUE, 
+	Name VARCHAR(255) NOT NULL
+	);
+
+
+DESCRIBE Psychologists;
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| PsychologistID | int          | NO   | PRI | NULL    |       |
+| Name           | varchar(255) | NO   |     | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
+
+
+ALTER TABLE Patients ADD FOREIGN KEY (PsychologistID) REFERENCES Psychologists(PsychologistID);
+
+DESCRIBE Patients;
++----------------+--------------+------+-----+---------+-------+
+| Field          | Type         | Null | Key | Default | Extra |
++----------------+--------------+------+-----+---------+-------+
+| PatientID      | int          | NO   | PRI | NULL    |       |
+| Name           | varchar(255) | NO   |     | NULL    |       |
+| Age            | int          | YES  |     | NULL    |       |
+| Genger         | varchar(2)   | YES  |     | NULL    |       |
+| PsychologistID | int          | YES  | MUL | NULL    |       |
++----------------+--------------+------+-----+---------+-------+
+
+
+2. Drop Both Keys:
+Write SQL commands to drop the primary key constraint and the foreign key constraint from the Patients table. 
+
+
+SHOW CREATE TABLE Patients;
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Patients | CREATE TABLE `Patients` (
+  `PatientID` int NOT NULL,
+  `Name` varchar(255) NOT NULL,
+  `Age` int DEFAULT NULL,
+  `Genger` varchar(2) DEFAULT NULL,
+  `PsychologistID` int DEFAULT NULL,
+  `AppointmentDate` date DEFAULT NULL,
+  PRIMARY KEY (`PatientID`),
+  UNIQUE KEY `PatientID` (`PatientID`),
+  KEY `PsychologistID` (`PsychologistID`),
+  CONSTRAINT `Patients_ibfk_1` FOREIGN KEY (`PsychologistID`) REFERENCES `Psychologists` (`PsychologitsID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+ALTER TABLE Patients DROP FOREIGN KEY `Patients_ibfk_1`;
+
+SHOW INDEX FROM Patients;
++----------+------------+----------------+--------------+----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name       | Seq_in_index | Column_name    | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+----------------+--------------+----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Patients |          0 | PRIMARY        |            1 | PatientID      | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| Patients |          0 | PatientID      |            1 | PatientID      | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| Patients |          1 | PsychologistID |            1 | PsychologistID | A         |           0 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++----------+------------+----------------+--------------+----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+
+
+ALTER TABLE Patients DROP PRIMARY KEY;
+
+SHOW INDEX FROM Patients;
++----------+------------+----------------+--------------+----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name       | Seq_in_index | Column_name    | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+----------------+--------------+----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Patients |          0 | PatientID      |            1 | PatientID      | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| Patients |          1 | PsychologistID |            1 | PsychologistID | A         |           0 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++----------+------------+----------------+--------------+----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+
+
+3. Add Primary Key:
+Alter the Patients table to add a new primary key constraint on the PatientID column. 
+
+ALTER TABLE Patients ADD PRIMARY KEY (PatientID);
+
+
+4. Add Composite Primary Key:
+Create a composite primary key on the PatientID and AppointmentDate columns to uniquely identify appointments (considering the need for appointment scheduling in the future).
+
+ALTER TABLE Patients ADD AppointmentDate DATE;
+
+DESCRIBE Patients;
++-----------------+--------------+------+-----+---------+-------+
+| Field           | Type         | Null | Key | Default | Extra |
++-----------------+--------------+------+-----+---------+-------+
+| PatientID       | int          | NO   | PRI | NULL    |       |
+| Name            | varchar(255) | NO   |     | NULL    |       |
+| Age             | int          | YES  |     | NULL    |       |
+| Genger          | varchar(2)   | YES  |     | NULL    |       |
+| PsychologistID  | int          | YES  | MUL | NULL    |       |
+| AppointmentDate | date         | YES  |     | NULL    |       |
++-----------------+--------------+------+-----+---------+-------+
+
+ALTER TABLE Patients ADD PRIMARY KEY (PatientID, AppointmentDate);
+
+SHOW INDEX FROM Patients;
++----------+------------+----------------+--------------+-----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name       | Seq_in_index | Column_name     | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+----------------+--------------+-----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Patients |          0 | PRIMARY        |            1 | PatientID       | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| Patients |          0 | PRIMARY        |            2 | AppointmentDate | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| Patients |          0 | PatientID      |            1 | PatientID       | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| Patients |          1 | PsychologistID |            1 | PsychologistID  | A         |           0 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++----------+------------+----------------+--------------+-----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+
+
+5.Add Foreign Key:
+Add a new foreign key constraint on the Patients table, referencing the Psychologists table.
+
+ALTER TABLE Patients ADD FOREIGN KEY (PsychologistID) REFERENCES Psychologists(PsychologitsID);
+
+SHOW INDEX FROM Patients;
++----------+------------+----------------+--------------+-----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name       | Seq_in_index | Column_name     | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+----------------+--------------+-----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Patients |          0 | PRIMARY        |            1 | PatientID       | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| Patients |          0 | PRIMARY        |            2 | AppointmentDate | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| Patients |          0 | PatientID      |            1 | PatientID       | A         |           0 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| Patients |          1 | PsychologistID |            1 | PsychologistID  | A         |           0 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++----------+------------+----------------+--------------+-----------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+
+
+6. Drop Foreign Key:
+Remove the foreign key constraint from the Patients table that references the Psychologists table. 
+
+SHOW CREATE TABLE Patiens;
+
+SHOW CREATE TABLE Patients;
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Patients | CREATE TABLE `Patients` (
+  `PatientID` int NOT NULL,
+  `Name` varchar(255) NOT NULL,
+  `Age` int DEFAULT NULL,
+  `Genger` varchar(2) DEFAULT NULL,
+  `PsychologistID` int DEFAULT NULL,
+  `AppointmentDate` date NOT NULL,
+  PRIMARY KEY (`PatientID`,`AppointmentDate`),
+  UNIQUE KEY `PatientID` (`PatientID`),
+  KEY `PsychologistID` (`PsychologistID`),
+  CONSTRAINT `Patients_ibfk_1` FOREIGN KEY (`PsychologistID`) REFERENCES `Psychologists` (`PsychologitsID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+ALTER TABLE Patietns DROP FOREIGN KEY `Patients_ibfk_1`;
+
+
